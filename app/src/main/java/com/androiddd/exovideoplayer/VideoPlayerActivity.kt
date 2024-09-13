@@ -1,23 +1,21 @@
 package com.androiddd.exovideoplayer
 
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import com.androiddd.exovideoplayer.databinding.ActivityVideoPlayerBinding
+
 
 class VideoPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityVideoPlayerBinding
     private var player: ExoPlayer? = null
-
+    private var playbackPosition = 0L
+    private var playWhenReady = true
+    private var videoUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,39 +23,30 @@ class VideoPlayerActivity : AppCompatActivity() {
         binding = ActivityVideoPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val videoUrl = intent.getStringExtra("videoUrl") ?: return
-
-        initializePlayer(videoUrl)
+        videoUrl = intent.getStringExtra("videoUrl")
     }
 
-    private fun initializePlayer(videoUrl: String) {
-        // Initialize Media3 ExoPlayer
-        player = ExoPlayer.Builder(this).build()
-
-        // Bind the PlayerView to the ExoPlayer
-        binding.playerView.player = player
-
-        // Create and prepare the media item
-        val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
-        player?.setMediaItem(mediaItem)
-
-        // Prepare the player
-        player?.prepare()
-
-        // Start playback when ready
-        player?.playWhenReady = true
+    private fun initializePlayer() {
+        if (player == null && videoUrl != null) {
+            player = ExoPlayer.Builder(this).build().apply {
+                setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
+                playWhenReady = this@VideoPlayerActivity.playWhenReady
+                seekTo(playbackPosition)
+                prepare()
+            }
+            binding.playerView.player = player
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        player?.playWhenReady = true
+        initializePlayer()
     }
 
     override fun onResume() {
         super.onResume()
         if (player == null) {
-            val videoUrl = intent.getStringExtra("VIDEO_URL") ?: return
-            initializePlayer(videoUrl)
+            initializePlayer()
         }
     }
 
@@ -72,8 +61,11 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun releasePlayer() {
-        player?.release()
-        player = null
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.release()
+            player = null
+        }
     }
-
 }
