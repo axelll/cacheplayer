@@ -23,7 +23,10 @@ class MainActivity : AppCompatActivity() {
     private fun setClickListeners() {
         binding.btnPlayVideo.setOnClickListener {
             val intent = Intent(this, VideoPlayerActivity::class.java)
-            intent.putExtra("videoUrl", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+            intent.putExtra(
+                "videoUrl",
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            )
             startActivity(intent)
         }
     }

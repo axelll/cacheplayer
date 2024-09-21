@@ -15,11 +15,11 @@ class ExoVideoPlayer : Application() {
 
         @get:UnstableApi
         val simpleCache by lazy {
-            getSimpleCache()
+            initCache()
         }
 
         @OptIn(UnstableApi::class)
-        private fun getSimpleCache(): SimpleCache {
+        private fun initCache(): SimpleCache {
             val cacheSize = 100 * 1024 * 1024 // 100MB cache
             val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
             val databaseProvider = StandaloneDatabaseProvider(instance)
