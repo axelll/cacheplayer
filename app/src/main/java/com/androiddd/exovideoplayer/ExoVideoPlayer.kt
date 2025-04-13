@@ -17,7 +17,7 @@ class ExoVideoPlayer : Application() {
         @OptIn(UnstableApi::class)
         val simpleCache by lazy {
             Log.d("ExoVideoPlayer", "Creating new cache instance")
-            val cacheSize = 200 * 1024 * 1024 // 200MB cache
+            val cacheSize = 10L * 1024 * 1024 * 1024 // 10GB cache
             val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
             val databaseProvider = StandaloneDatabaseProvider(instance)
             val cacheDir = File(instance.cacheDir, "media")

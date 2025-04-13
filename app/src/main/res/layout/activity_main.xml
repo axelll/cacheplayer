@@ -5,62 +5,32 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/iv_player_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toTopOf="@+id/tv_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:contentDescription="Player Icon" />
+
     <TextView
-        android:id="@+id/tv_status"
+        android:id="@+id/tv_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Ready to download"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/progress_download"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_status" />
-
-    <TextView
-        android:id="@+id/tv_progress_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="0%"
-        app:layout_constraintEnd_toEndOf="@id/progress_download"
-        app:layout_constraintStart_toStartOf="@id/progress_download"
-        app:layout_constraintTop_toBottomOf="@id/progress_download" />
-
-    <Button
-        android:id="@+id/btn_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:enabled="false"
-        android:text="Cancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_progress_percent" />
-
-    <Button
-        android:id="@+id/btn_play_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play Video"
-        android:enabled="false"
+        android:text="Этот плеер работает как обработчик видео из внешних приложений.\n\nОткройте видео из интернета в другом приложении и выберите этот плеер."
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
