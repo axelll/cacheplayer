@@ -1,6 +1,7 @@
 package com.androiddd.exovideoplayer
 
 import android.app.Application
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -13,22 +14,27 @@ class ExoVideoPlayer : Application() {
     companion object {
         lateinit var instance: ExoVideoPlayer
 
-        @get:UnstableApi
-        val simpleCache by lazy {
-            initCache()
-        }
-
         @OptIn(UnstableApi::class)
-        private fun initCache(): SimpleCache {
-            val cacheSize = 100 * 1024 * 1024 // 100MB cache
+        val simpleCache by lazy {
+            Log.d("ExoVideoPlayer", "Creating new cache instance")
+            val cacheSize = 200 * 1024 * 1024 // 200MB cache
             val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheSize.toLong())
             val databaseProvider = StandaloneDatabaseProvider(instance)
-            return SimpleCache(File(instance.cacheDir, "media"), cacheEvictor, databaseProvider)
+            val cacheDir = File(instance.cacheDir, "media")
+            cacheDir.mkdirs()
+            Log.d("ExoVideoPlayer", "Cache directory: ${cacheDir.absolutePath}")
+            SimpleCache(cacheDir, cacheEvictor, databaseProvider)
         }
     }
 
+    @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
         instance = this
+        Log.d("ExoVideoPlayer", "Application initialized")
+        
+        // Инициализируем кэш сразу при запуске приложения
+        val keys = simpleCache.keys
+        Log.d("ExoVideoPlayer", "Cache initialized with keys: $keys")
     }
 }
