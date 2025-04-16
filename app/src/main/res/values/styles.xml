@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Стиль для обычной кнопки -->
+    <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="backgroundTint">#3F51B5</item> <!-- Синий цвет -->
+        <item name="strokeColor">#FFFFFF</item> <!-- Белая обводка -->
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- Стиль для выбранной кнопки -->
+    <style name="CustomButtonStyle.Selected">
+        <item name="backgroundTint">#FF5722</item> <!-- Оранжевый цвет -->
+        <item name="strokeColor">#FFEB3B</item> <!-- Желтая обводка -->
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <!-- Стиль для отключенной кнопки -->
+    <style name="CustomButtonStyle.Disabled">
+        <item name="backgroundTint">#9E9E9E</item> <!-- Серый цвет -->
+        <item name="strokeColor">#BDBDBD</item> <!-- Светло-серая обводка -->
+        <item name="android:textColor">#E0E0E0</item> <!-- Светло-серый текст -->
+    </style>
+    <!-- Стиль для кнопки в темном режиме -->
+    <style name="DarkModeButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/dark_text_high_emphasis</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="backgroundTint">@color/dark_button_background</item>
+        <item name="strokeColor">@color/dark_button_stroke</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- Стиль для выбранной кнопки в темном режиме -->
+    <style name="DarkModeButtonStyle.Selected">
+        <item name="backgroundTint">@color/dark_button_selected</item>
+        <item name="strokeColor">@color/dark_primary</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <!-- Стиль для отключенной кнопки в темном режиме -->
+    <style name="DarkModeButtonStyle.Disabled">
+        <item name="backgroundTint">@color/dark_button_disabled</item>
+        <item name="strokeColor">@color/dark_surface_overlay_1</item>
+        <item name="android:textColor">@color/dark_text_disabled</item>
+    </style>
+</resources>

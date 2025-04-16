@@ -2,4 +2,27 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Цвета для темного режима по Material Design (скорректированные) -->
+    <color name="dark_background">#1E1E1E</color> <!-- Светлее, чем было -->
+    <color name="dark_surface">#252525</color> <!-- Светлее, чем было -->
+    <color name="dark_primary">#BB86FC</color>
+    <color name="dark_primary_variant">#3700B3</color>
+    <color name="dark_secondary">#03DAC6</color>
+    <color name="dark_error">#CF6679</color>
+
+    <!-- Текст с правильными уровнями непрозрачности (более молочный) -->
+    <color name="dark_text_high_emphasis">#DEEAEAEA</color> <!-- Молочный белый -->
+    <color name="dark_text_medium_emphasis">#99EAEAEA</color> <!-- Молочный белый 60% -->
+    <color name="dark_text_disabled">#61EAEAEA</color> <!-- Молочный белый 38% -->
+    <color name="dark_text_title">#CCEAEAEA</color> <!-- Еще более приглушенный для заголовка -->
+
+    <!-- Дополнительные цвета для элементов интерфейса -->
+    <color name="dark_surface_overlay_1">#1FEAEAEA</color> <!-- 12% молочного наложения -->
+    <color name="dark_surface_overlay_2">#2FEAEAEA</color> <!-- 18% молочного наложения -->
+    <color name="dark_button_background">#2D2D2D</color> <!-- Фон кнопки (светлее) -->
+    <color name="dark_button_stroke">#3D3D3D</color> <!-- Обводка кнопки (светлее) -->
+    <color name="dark_button_selected">#3700B3</color> <!-- Цвет выбранной кнопки -->
+    <color name="dark_button_disabled">#2A2A2A</color> <!-- Цвет неактивной кнопки -->
+    <color name="dark_button_cancel">#1A365D</color> <!-- Приглушенный темно-синий для кнопки отмены -->
 </resources>
