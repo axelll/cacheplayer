@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Сплошной темный фон -->
+    <item>
+        <color android:color="@color/dark_background" />
+    </item>
+    
+    <!-- Центрированное изображение без растягивания -->
+    <item>
+        <bitmap
+            android:src="@drawable/background"
+            android:gravity="center"
+            android:alpha="0.6" /> <!-- 60% непрозрачности для изображения -->
+    </item>
+    
+    <!-- Дополнительный полупрозрачный оверлей для лучшей читаемости текста -->
+    <item>
+        <color android:color="#66000000" /> <!-- 40% непрозрачный черный -->
+    </item>
+</layer-list>

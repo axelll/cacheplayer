@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Градиентный фон вместо сплошного черного -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="100%p"
+                android:startColor="#1A3A5F"
+                android:centerColor="#102A4A"
+                android:endColor="#051525"
+                android:centerX="0.5"
+                android:centerY="0.5" />
+        </shape>
+    </item>
+
+    <!-- Большое изображение по центру -->
+    <item>
+        <bitmap
+            android:src="@drawable/background"
+            android:gravity="center"
+            android:alpha="0.9" />
+    </item>
+
+    <!-- Дополнительный полупрозрачный оверлей для лучшей читаемости текста -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="100%p"
+                android:startColor="#22000000"
+                android:centerColor="#33000000"
+                android:endColor="#55000000"
+                android:centerX="0.5"
+                android:centerY="0.5" />
+        </shape>
+    </item>
+</layer-list>
