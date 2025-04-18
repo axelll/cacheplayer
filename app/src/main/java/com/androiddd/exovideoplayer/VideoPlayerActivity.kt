@@ -13,7 +13,9 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -21,6 +23,7 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheWriter
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.androiddd.exovideoplayer.ExoVideoPlayer.Companion.simpleCache
 import com.androiddd.exovideoplayer.databinding.ActivityVideoPlayerBinding
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +41,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityVideoPlayerBinding
     private var player: ExoPlayer? = null
+    private var trackSelector: DefaultTrackSelector? = null
     private var playbackPosition = 0L
     private var playWhenReady = true
     private var videoUrl: String? = null
@@ -878,6 +882,15 @@ class VideoPlayerActivity : AppCompatActivity() {
                     .setCacheKeyFactory(ExoVideoPlayer.cacheKeyFactory) // Используем кастомный CacheKeyFactory
                     .setFlags(CacheDataSource.FLAG_BLOCK_ON_CACHE)
 
+                // Создаем трек-селектор с настройками для автоматического выбора русской аудиодорожки
+                trackSelector = DefaultTrackSelector(this).apply {
+                    // Устанавливаем предпочтительный язык аудио - русский
+                    setParameters(
+                        buildUponParameters().setPreferredAudioLanguage("ru")
+                    )
+                    Log.d(TAG, "Track selector configured with preferred audio language: ru")
+                }
+
                 // Create a media source using the cache data source factory
                 val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
 
@@ -888,6 +901,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
                 player = ExoPlayer.Builder(this)
                     .setMediaSourceFactory(mediaSourceFactory)
+                    .setTrackSelector(trackSelector!!) // Используем трек-селектор с настройками
                     .build()
                     .apply {
                         setMediaItem(mediaItem)
@@ -896,7 +910,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                         prepare()
 
                         // Log playback errors and other events
-                        addListener(object : androidx.media3.common.Player.Listener {
+                        addListener(object : Player.Listener {
                             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                                 Log.e(TAG, "Player error: ${error.message}", error)
                                 Toast.makeText(this@VideoPlayerActivity,
@@ -905,13 +919,52 @@ class VideoPlayerActivity : AppCompatActivity() {
 
                             override fun onPlaybackStateChanged(state: Int) {
                                 val stateStr = when(state) {
-                                    androidx.media3.common.Player.STATE_IDLE -> "IDLE"
-                                    androidx.media3.common.Player.STATE_BUFFERING -> "BUFFERING"
-                                    androidx.media3.common.Player.STATE_READY -> "READY"
-                                    androidx.media3.common.Player.STATE_ENDED -> "ENDED"
+                                    Player.STATE_IDLE -> "IDLE"
+                                    Player.STATE_BUFFERING -> "BUFFERING"
+                                    Player.STATE_READY -> "READY"
+                                    Player.STATE_ENDED -> "ENDED"
                                     else -> "UNKNOWN"
                                 }
                                 Log.d(TAG, "Playback state changed: $stateStr")
+                            }
+
+                            @OptIn(UnstableApi::class)
+                            override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
+                                // Логируем информацию о доступных аудиодорожках
+                                val audioTracks = mutableListOf<String>()
+
+                                for (trackGroup in tracks.groups) {
+                                    // Проверяем только аудиодорожки
+                                    if (trackGroup.type == C.TRACK_TYPE_AUDIO) {
+                                        for (i in 0 until trackGroup.length) {
+                                            val format = trackGroup.getTrackFormat(i)
+                                            val language = format.language ?: "unknown"
+                                            val label = format.label ?: "no label"
+                                            val isSelected = trackGroup.isTrackSelected(i)
+
+                                            audioTracks.add("[$i] Language: $language, Label: $label, Selected: $isSelected")
+
+                                            // Если это русская дорожка и она не выбрана, выбираем её
+                                            if (language.equals("ru", ignoreCase = true) && !isSelected) {
+                                                Log.d(TAG, "Found Russian audio track, selecting it")
+                                                val trackSelectionParameters = player?.trackSelectionParameters
+                                                    ?.buildUpon()
+                                                    ?.setPreferredAudioLanguage("ru")
+                                                    ?.build()
+
+                                                trackSelectionParameters?.let {
+                                                    player?.trackSelectionParameters = it
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (audioTracks.isNotEmpty()) {
+                                    Log.d(TAG, "Available audio tracks: ${audioTracks.joinToString("\n")}")
+                                } else {
+                                    Log.d(TAG, "No audio tracks found")
+                                }
                             }
                         })
                     }
@@ -1646,6 +1699,9 @@ class VideoPlayerActivity : AppCompatActivity() {
             playWhenReady = exoPlayer.playWhenReady
             exoPlayer.release()
             player = null
+
+            // Освобождаем трек-селектор
+            trackSelector = null
         }
     }
 }
