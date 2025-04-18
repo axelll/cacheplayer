@@ -1480,6 +1480,16 @@ class VideoPlayerActivity : AppCompatActivity() {
                 }
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                // Показываем стандартный контроллер плеера
+                binding.playerView.showController()
+
+                // Перемещаем фокус на кнопку настроек
+                moveToSettingsButton()
+
+                Log.d(TAG, "Down button pressed, showing controller and moving focus to settings")
+                return true
+            }
         }
 
         return super.dispatchKeyEvent(event)
@@ -1560,6 +1570,74 @@ class VideoPlayerActivity : AppCompatActivity() {
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    /**
+     * Перемещает фокус на кнопку настроек в контроллере плеера
+     */
+    private fun moveToSettingsButton() {
+        try {
+            // Находим кнопку настроек в контроллере плеера
+            val settingsButton = findSettingsButton(binding.playerView)
+
+            if (settingsButton != null) {
+                // Устанавливаем фокус на кнопку настроек
+                settingsButton.requestFocus()
+                Log.d(TAG, "Focus moved to settings button")
+            } else {
+                Log.d(TAG, "Settings button not found")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error moving focus to settings button", e)
+        }
+    }
+
+    /**
+     * Рекурсивно ищет кнопку настроек в иерархии представления
+     */
+    private fun findSettingsButton(view: View): View? {
+        // Если это ViewGroup, проходим по всем дочерним элементам
+        if (view is ViewGroup) {
+            // Проверяем, есть ли в дочерних элементах кнопка настроек
+            for (i in 0 until view.childCount) {
+                val child = view.getChildAt(i)
+
+                // Проверяем, является ли этот элемент кнопкой настроек
+                if (isSettingsButton(child)) {
+                    return child
+                }
+
+                // Рекурсивно ищем в дочерних элементах
+                val settingsButton = findSettingsButton(child)
+                if (settingsButton != null) {
+                    return settingsButton
+                }
+            }
+        }
+
+        // Проверяем, является ли текущий элемент кнопкой настроек
+        return if (isSettingsButton(view)) view else null
+    }
+
+    /**
+     * Проверяет, является ли элемент кнопкой настроек
+     */
+    private fun isSettingsButton(view: View): Boolean {
+        // Проверяем по ID
+        if (view.id == androidx.media3.ui.R.id.exo_settings) {
+            return true
+        }
+
+        // Проверяем по тегу (content description)
+        val contentDescription = view.contentDescription
+        if (contentDescription != null && (
+                contentDescription.toString().contains("settings", ignoreCase = true) ||
+                contentDescription.toString().contains("настрой", ignoreCase = true)
+            )) {
+            return true
+        }
+
+        return false
     }
 
     private fun releasePlayer() {
