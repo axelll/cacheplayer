@@ -218,10 +218,12 @@ class VideoPlayerActivity : AppCompatActivity() {
                 CoroutineScope(Dispatchers.IO).launch {
                     val contentLength = getContentLength(videoUrl!!)
                     if (contentLength > 0) {
-                        val cachedBytes = simpleCache.getCachedBytes(videoUrl!!, 0, contentLength)
+                        // Получаем правильный ключ кэша через FileNameCacheKeyFactory
+                        val cacheKey = ExoVideoPlayer.cacheKeyFactory.buildCacheKey(DataSpec(Uri.parse(videoUrl!!)))
+                        val cachedBytes = simpleCache.getCachedBytes(cacheKey, 0, contentLength)
                         if (cachedBytes > 0) {
                             actualCacheProgress = (cachedBytes * 100 / contentLength).toInt()
-                            Log.d(TAG, "Actual cache progress from cache: $actualCacheProgress%")
+                            Log.d(TAG, "Actual cache progress from cache: $actualCacheProgress% using key: $cacheKey")
 
                             // Обновляем сохраненный прогресс, если реальный прогресс больше
                             if (actualCacheProgress > ExoVideoPlayer.lastCacheProgress) {
