@@ -3,9 +3,11 @@ package com.androiddd.exovideoplayer
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.KeyEvent
 import android.os.StatFs
 import android.util.Log
+import android.view.WindowManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -48,6 +50,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var cacheJob: Job? = null
     private var cacheWriter: CacheWriter? = null
     private var cacheDataSource: CacheDataSource? = null
+    private var wakeLock: PowerManager.WakeLock? = null
     private val TAG = "VideoPlayerActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -292,6 +295,10 @@ class VideoPlayerActivity : AppCompatActivity() {
         window.decorView.setBackgroundColor(Color.BLACK)
 
         initializePlayer()
+
+        // Активируем WakeLock и флаг KEEP_SCREEN_ON для предотвращения перехода в режим скринсейвера
+        // во время воспроизведения видео
+        acquireWakeLock()
     }
 
     private fun enablePlayButton() {
@@ -1219,6 +1226,9 @@ class VideoPlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        // Освобождаем WakeLock при закрытии активности
+        releaseWakeLock()
+
         // Сохраняем прогресс загрузки текущего файла
         if (isSameFile && binding.progressDownload.progress > 0) {
             ExoVideoPlayer.lastCacheProgress = binding.progressDownload.progress
@@ -1693,6 +1703,50 @@ class VideoPlayerActivity : AppCompatActivity() {
         return false
     }
 
+    /**
+     * Активирует WakeLock и флаг KEEP_SCREEN_ON для предотвращения перехода в режим скринсейвера
+     */
+    private fun acquireWakeLock() {
+        try {
+            // Устанавливаем флаг KEEP_SCREEN_ON для предотвращения перехода в режим скринсейвера
+            binding.playerView.keepScreenOn = true
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+            // Создаем WakeLock для предотвращения перехода в режим сна
+            if (wakeLock == null) {
+                val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+                wakeLock = powerManager.newWakeLock(
+                    PowerManager.SCREEN_DIM_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
+                    "YuraVision:VideoPlayerWakeLock"
+                )
+                wakeLock?.acquire()
+                Log.d(TAG, "WakeLock acquired to prevent screensaver during playback")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error acquiring WakeLock", e)
+        }
+    }
+
+    /**
+     * Освобождает WakeLock и снимает флаг KEEP_SCREEN_ON
+     */
+    private fun releaseWakeLock() {
+        try {
+            // Снимаем флаг KEEP_SCREEN_ON
+            binding.playerView.keepScreenOn = false
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+            // Освобождаем WakeLock
+            if (wakeLock?.isHeld == true) {
+                wakeLock?.release()
+                wakeLock = null
+                Log.d(TAG, "WakeLock released")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error releasing WakeLock", e)
+        }
+    }
+
     private fun releasePlayer() {
         player?.let { exoPlayer ->
             playbackPosition = exoPlayer.currentPosition
@@ -1702,6 +1756,9 @@ class VideoPlayerActivity : AppCompatActivity() {
 
             // Освобождаем трек-селектор
             trackSelector = null
+
+            // Освобождаем WakeLock и снимаем флаг KEEP_SCREEN_ON
+            releaseWakeLock()
         }
     }
 }
